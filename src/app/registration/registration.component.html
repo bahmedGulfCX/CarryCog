@@ -1,0 +1,86 @@
+<div class="theme-page-section theme-page-section-xl theme-page-section-gray">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+          <div class="theme-login">
+            <div class="theme-login-header">
+              <h1 class="theme-login-title">Sign Up</h1>
+              <p class="theme-login-subtitle">Create new CarryCog account</p>
+            </div>
+            <div class="theme-login-box">
+              <div class="theme-login-box-inner">
+                
+                <form [formGroup]="service.formModel" autocomplete="off" (submit)="onSubmit()">
+                    <div class="form-group theme-login-form-group">
+                        <input class="form-control" type="text" placeholder="First Name" formControlName="FirstName" autocomplete="false" />
+                        <label class="text-danger" *ngIf="service.formModel.get('FirstName').touched && service.formModel.get('FirstName').errors?.required">First Name is Required.</label>
+                      </div>
+                      <div class="form-group theme-login-form-group">
+                        <input class="form-control" type="text" placeholder="Last Name" formControlName="LastName" autocomplete="false" />                        
+                      </div>
+                    <div class="form-group theme-login-form-group">
+                        <input class="form-control" type="text" placeholder="Email Address" formControlName="Email" autocomplete="false" />
+                        <label class="text-danger" *ngIf="service.formModel.get('Email').touched && service.formModel.get('Email').errors?.email">Invalid email address.</label>
+                      </div>
+                      <div class="form-group theme-login-form-group">
+                        <input class="form-control" type="text" placeholder="Contact Number" formControlName="Contact" autocomplete="false" />                        
+                      </div>
+                    <div formGroupName="Passwords">
+                      <div class="form-group theme-login-form-group required">
+                        <input class="form-control" type="text" placeholder="Password" formControlName="Password" autocomplete="false" /> 
+                        <label class="text-danger" *ngIf="service.formModel.get('Passwords.Password').touched && service.formModel.get('Passwords.Password').errors?.required">This field is mandatory.</label>
+                        <label class="text-danger" *ngIf="service.formModel.get('Passwords.Password').touched && service.formModel.get('Passwords.Password').errors?.minlength">Minimum 4 characters required.</label>
+                      </div>
+                      <div class="form-group theme-login-form-group required">
+                        <input class="form-control" type="text" placeholder="Confirm Password" formControlName="ConfirmPassword" autocomplete="false" /> 
+                        <label class="text-danger" *ngIf="service.formModel.get('Passwords.ConfirmPassword').touched && service.formModel.get('Passwords.ConfirmPassword').errors?.required">This field is mandatory.</label>
+                        <label class="text-danger" *ngIf="service.formModel.get('Passwords.ConfirmPassword').touched && service.formModel.get('Passwords.ConfirmPassword').errors?.passwordMismatch">Confirm Password does not match.</label>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-uc btn-dark btn-block btn-lg" [disabled]="!service.formModel.valid">Create Account</button>
+                    <br>
+                   </form>
+                  
+
+                <div class="theme-login-social-separator">
+                  <p>or sign up with social media</p>
+                </div>
+                <div class="theme-login-social-login">
+                  <div class="row" data-gutter="10">
+                    <div class="col-xs-6">
+                      <a class="theme-login-social-login-facebook" href="#">
+                        <i class="fa fa-facebook-square"></i>
+                        <span>Sign up with
+                          <br/>
+                          <b>Facebook</b>
+                        </span>
+                      </a>
+                    </div>
+                    <div class="col-xs-6">
+                      <a class="theme-login-social-login-google" href="#">
+                        <i class="fa fa-google-plus-circle"></i>
+                        <span>Sign up with
+                          <br/>
+                          <b>Google</b>
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="theme-login-box-alt">
+                <p>Already have an account? &nbsp;
+                  <a routerLink="/login">Sign in.</a>
+                </p>
+              </div>
+            </div>
+            <p class="theme-login-terms">By signing up you accept our
+              <a href="#">terms of use</a>
+              <br/>and
+              <a href="#">privacy policy</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
