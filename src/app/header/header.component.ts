@@ -1,7 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { RefreshHeaderService } from '../shared/refresh-header.service';
+import { Component, OnInit } from '@angular/core';
 
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { HomeService } from '../shared/home.service';
+import { Router } from '@angular/router';
+import * as data from '../JsonData/FilteredCities.json';
+import { ToastRef, ToastrService } from 'ngx-toastr';
+import { DatePipe } from '@angular/common'
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -9,9 +14,16 @@ import { RefreshHeaderService } from '../shared/refresh-header.service';
 })
 export class HeaderComponent implements OnInit {
   loadAPI: Promise<any>;
+  userName: string;
+  isCollapsed = true;
+  angularVersion: string;
+  navbarCollapsed = true;
+  navbarDropDown = true;
   constructor(private router:Router,private _headerService:RefreshHeaderService) { 
- 
+
   }
+
+
 
   token: boolean = false;
   ngOnInit(): void {
@@ -20,11 +32,20 @@ export class HeaderComponent implements OnInit {
       RefreshHeader.subscribe((name:string) => {    
         this.RefreshNavBar();    
       });    
-    }   
+    } 
+    
+  
     this.RefreshNavBar();
   }
-
+  toggleIsCollapse(){
+    if(this.isCollapsed)
+      this.isCollapsed = false;
+    else
+      this.isCollapsed = true;
+  }
   RefreshNavBar(){
+    this.userName = localStorage.getItem('userName');
+    console.log(this.userName);
     if (localStorage.getItem('token') != null)
     this.token = true;
     else
@@ -33,6 +54,9 @@ export class HeaderComponent implements OnInit {
 
   onLogout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userID');
+    this.userName = '';
     this.router.navigate(['/Home']);
     this.RefreshNavBar();
   }

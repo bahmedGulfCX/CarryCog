@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router,ActivatedRoute } from '@angular/router';
 import { UserService } from '../shared/user.service';
 import { ToastrService } from 'ngx-toastr';
 @Component({
@@ -10,19 +10,24 @@ import { ToastrService } from 'ngx-toastr';
 export class ResetPasswordComponent implements OnInit {
 
   loadAPI: Promise<any>;
-  constructor(private router:Router,public service:UserService,private toastr:ToastrService) { 
+  constructor(private router:Router, private route: ActivatedRoute,public service:UserService,private toastr:ToastrService) { 
 
   }
-
+  userID;
+  customUserID;
   ngOnInit(): void {
-    this.service.ResetPasswordModel.reset();
+    //this.service.ResetPasswordModel.reset();
+    this.userID = this.route.snapshot.paramMap.get('ID');
+    if(this.userID != null){
+    this.customUserID = this.userID.split('|');
+    }
   }
 
   
   
 
   onSubmit() {
-    var result =this.service.resetPassword();
+    var result = this.service.resetPassword(this.customUserID[1]);
     result.subscribe(
       (res: any) => {
          if (res.succeeded) {

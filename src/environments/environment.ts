@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://api.carrycog.com/api' 
+  baseUrl: 'http://localhost:59035/api' 
 };
 
 /*

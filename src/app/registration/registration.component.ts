@@ -30,7 +30,7 @@ export class RegistrationComponent implements OnInit {
           this.service.formModel.reset();
           this.toastr.success('Activation code has been sent to your email. Please activate your account.', 'Registration successful');
           this._headerService.onRefreshHeader();
-          this.router.navigateByUrl("/Home");
+          this.router.navigateByUrl("/login");
         } else {
           console.log(res.errors);
           this.toastr.error(res.errors, 'Error');

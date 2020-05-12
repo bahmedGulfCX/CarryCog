@@ -11,6 +11,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { CreatepostComponent } from './createpost/createpost.component';
 import { MypostsComponent } from './myposts/myposts.component';
 import { UpdatepostComponent } from './updatepost/updatepost.component';
+import { ActivateuserComponent } from './activateuser/activateuser.component';
 
 
 const routes: Routes = [
@@ -19,11 +20,12 @@ const routes: Routes = [
   {path:'createpost', component: CreatepostComponent},
   {path:'login', component: LoginComponent},
   {path:'verifyemail', component: VerifyemailComponent},
-  {path:'resetpassword', component: ResetPasswordComponent},
+  {path:'resetpassword/:ID', component: ResetPasswordComponent},
   {path:'changepassword', component: ChangepasswordComponent},
   {path:'registration', component: RegistrationComponent},
   {path:'myposts',component: MypostsComponent},
-  {path:'updatepost', component: UpdatepostComponent}
+  {path:'updatepost', component: UpdatepostComponent},
+  {path:'activateuser/:Email',component: ActivateuserComponent}
   
 ];
 

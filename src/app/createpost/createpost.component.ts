@@ -5,6 +5,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ScriptService } from '../shared/script.service';
 
+import { RefreshHeaderService } from '../shared/refresh-header.service';
 
 @Component({
   selector: 'app-createpost',
@@ -16,19 +17,48 @@ export class CreatepostComponent implements OnInit {
   fromCity:string;
   toCity:string;
   
+  fromCityBool:boolean = true;
+  toCityBool:boolean = true;
+  readonly myCutomRegex = '^[^,\n]*((,[^,\n]*){2}$)';
+  today: Date;
+  maxDate: Date;
+  minDate: Date;
+  Currencies;
   loadAPI: Promise<any>;
-  constructor(private _scriptLoader:ScriptService, public _homeService:HomeService,private toastr:ToastrService, private router:Router) { 
+  constructor(private _scriptLoader:ScriptService,private _headerService:RefreshHeaderService, public _homeService:HomeService,private toastr:ToastrService, private router:Router) { 
     this.loadAPI = new Promise((resolve) => {
       this.loadScript();
       resolve(true);
   });
+  this.today = new Date();
+    this.minDate = new Date(this.today.getFullYear(), this.today.getMonth(), 2);
   }
   
   ngOnInit(): void {
+    if(localStorage.getItem('token')  != null){
     this._homeService.CreatePostModel.reset();
-   
+    this.getListOfCurrencies();
+    }else{
+      this.toastr.error('Please login / register first.', 'No Session Found!');
+          this.router.navigateByUrl("/login");
+    }
   }
-  
+  getListOfCurrencies(){
+    this._homeService.getListOfCurrencies().subscribe(
+      (res: any) => {
+         if (res.succeeded) {
+           this.Currencies = res.data;
+        } else {
+          console.log(res.errors);
+          this.toastr.error(res.errors, 'Error');
+        }
+      },
+      err => {       
+        console.log(err.error);
+        this.toastr.error(err.error.errors, 'Error');
+      }
+    );
+  }
 
 
   public loadScript() {        
@@ -72,31 +102,75 @@ export class CreatepostComponent implements OnInit {
 
 fromCityChange(fromCity: string){
     this.fromCity = fromCity;
-     console.log(this.fromCity);
-}
+    if(this.fromCity != ''){
+      if(!this.fromCity.match('^[^,\n]*((,[^,\n]*){2}$)')){
+      this.fromCityBool = false;
+      }
+      else{
+        this.fromCityBool = true;
+      }
+    }
+      }
 ToCityChange(toCity: string){
   this.toCity = toCity;
-     console.log(this.toCity);   
+  
+if(this.toCity != ''){
+  if(!this.toCity.match('^[^,\n]*((,[^,\n]*){2}$)')){
+    this.toCityBool = false;
+    }  
+    else{
+      this.toCityBool = true;
+    }
+  }
+    
 }
   onSubmit() {
     this.submitted = true;
-   
+    console.log(this.formType);
     var result =this._homeService.createPost(this.fromCity,this.toCity);
     result.subscribe(
       (res: any) => {
          if (res.succeeded) {
-          this._homeService.CreatePostModel.reset();
+          //this._homeService.CreatePostModel.reset();
           this.toastr.success('Post has been created and waiting for Admins approval.', 'Waiting For Approvals');
           this.router.navigateByUrl("/Home");
         } else {
+          
+          if(res.error != ''){
+          this.toastr.error(res.error_description,res.error);
+          
+          localStorage.removeItem('token');
+          localStorage.removeItem('userName');
+          localStorage.removeItem('userID');
+          this.router.navigate(['/Home']);
+          this._headerService.onRefreshHeader();
+          }
+          else{
+            this.toastr.error(res.errors, 'Error');
           console.log(res.errors);
-          this.toastr.error(res.errors, 'Error');
+          }
         }
       },
       err => {       
+        console.log(err.error);
         this.toastr.error(err.error.errors, 'Error');
       }
     );
+  }
+
+  formType:string = "Traveller";
+  updateForm(){
+    this.formType = this._homeService.CreatePostModel.get('PostType').value;
+    switch(this.formType) {  
+      case "Traveller": { 
+        console.log('Form changed to Traveller')
+         break;
+      }
+      case "Requester": { 
+        console.log('Form changed to Requester')
+         break;
+      }      
+   }
   }
 
   // onSubmitWithForm(form: NgForm) {

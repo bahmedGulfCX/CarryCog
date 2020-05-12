@@ -30,12 +30,12 @@ export class UserService {
   });
 
   formModel = this.fb.group({
-    FirstName: ['', Validators.required],
-    LastName: [''],
+    FirstName: ['', [Validators.required, Validators.minLength(3)]],
+    LastName: ['',[Validators.required, Validators.minLength(3)]],
     Email: ['', Validators.email],
-    Contact: [''],
+    Contact: ['', Validators.required],
     Passwords: this.fb.group({
-      Password: ['', [Validators.required, Validators.minLength(4)]],
+      Password: ['', [Validators.required, Validators.minLength(8)]],
       ConfirmPassword: ['', Validators.required]
     }, { validator: this.comparePasswords })
 
@@ -63,6 +63,13 @@ export class UserService {
     var result = this.http.post(this.BaseURI+'/users/register', body);    
     return result;
   }
+  activateUser(Email:string) {
+    var body = {
+      Email: Email
+    };
+    var result = this.http.post(this.BaseURI+'/users/register/activateaccount/', body);    
+    return result;
+  }
   verifyEmailObject;
 
   verifyEmail() {
@@ -86,9 +93,9 @@ export class UserService {
     return result;
   }
 
-  resetPassword(){    
+  resetPassword(userID:string){    
     var body = {
-      Id: this.verifyEmailObject.userId,
+      Id: userID,
       Password: this.ResetPasswordModel.value.Password
     };
     var result = this.http.post(this.BaseURI+'/users/resetpassword', body);    

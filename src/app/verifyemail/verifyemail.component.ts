@@ -25,13 +25,13 @@ export class VerifyemailComponent implements OnInit {
     result.subscribe(
       (res: any) => {
          if (res.succeeded) {
-          this.service.emailModel.reset();
-          this.service.verifyEmailObject = res;
-          this.toastr.success('Please update your password.', 'Email Verified');
-          this.router.navigateByUrl("/resetpassword");
+         // this.service.emailModel.reset();
+         // this.service.verifyEmailObject = res;
+          this.toastr.success('Reset password link has been sent to your Email.', 'Email Verified');
+          //this.router.navigateByUrl("/resetpassword");
         } else {
           console.log(res.errors);
-          this.toastr.error(res.errors, 'Error');
+          this.toastr.error(res.errors, 'Email Not Found!');
         }
       },
       err => {       

@@ -7195,10 +7195,18 @@
      filter: none;
    }
    .theme-search-results-item-img {
-     width: 100%;
+     width: 85%;
+     height: 90px;
+     
    }
+   .theme-search-results-item-img-mobile {
+    width: 50%;
+    height: 90px;
+    
+  }
    .theme-search-results-item-img-wrap {
      position: relative;
+     
    }
    .theme-search-results-item-img-wrap-inner {
      position: relative;

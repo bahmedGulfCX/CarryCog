@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   onSubmit(form: NgForm) {
     this.service.login(form.value).subscribe(
      (res: any) => {
-        localStorage.setItem('userObject',res);
+        localStorage.setItem('userName',res.FirstName+' '+res.LastName);
         localStorage.setItem('userID',res.Id);
         localStorage.setItem('token', res.Token);
         console.log(this.service.userObject);
@@ -37,8 +37,10 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl('/Home');
       },
       err => {
-        if (err.status == 400)
-         this.toaster.error('Incorrect username or password.', 'Authentication failed.');
+        if (err.status == 400){
+         this.toaster.error(err.error.message, 'Activation failed.');
+         console.log(err.error.message);
+        }
         else{
         this.toaster.error('Incorrect username or password.', 'Authentication failed.');
         console.log(err);

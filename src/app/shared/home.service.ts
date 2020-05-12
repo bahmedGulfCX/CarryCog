@@ -24,25 +24,25 @@ export class HomeService {
     Cost: [''],
     SpaceAvailable: [''],
     Details: [''],
-    PostType: ['']
+    PostType: [''],
+    Currency: ['']
   });
   
   EditPostModel = this.fb.group({   
     PostsID: [''], 
+    PostNumber: [''],
     FromCity: ['', { validators: [Validators.required,Validators.pattern(this.myCutomRegex)] }],
     ToCity: ['', { validators: [Validators.required,Validators.pattern(this.myCutomRegex)] }],
-    TravelDate: [''],
-    Cost: [''],
+    TravelDate: ['2020-02-02'],
+    Cost: ['0'],
     SpaceAvailable: [''],
     Details: [''],
     PostType: [''],
-    UserID:['']
-  });
-
-  SearchPostsModel = this.fb.group({
-    FromCity: ['', [Validators.required, Validators.pattern(this.myCutomRegex)]],
-    ToCity: ['', [Validators.required, Validators.pattern(this.myCutomRegex)]],
-    PostType: ['', Validators.required]
+    Currency: [''],
+    CurrencySymbolsId:[''],
+    UserID:[''],
+    FromCountry:[''],
+    ToCountry:['']
   });
 
   ListOfCities;
@@ -62,14 +62,16 @@ export class HomeService {
   }
 
   createPost(FromCity:string,ToCity:string){   
+    console.log(this.CreatePostModel.value);
     var body={
     FromCity: FromCity,
     ToCity: ToCity,
-    TravelDate: this.CreatePostModel.value.TravelDate,
-    Cost: this.CreatePostModel.value.Cost,
+    TravelDate: this.CreatePostModel.value.TravelDate != null ? this.CreatePostModel.value.TravelDate : '2020-02-02',
+    Cost: this.CreatePostModel.value.Cost != null ? this.CreatePostModel.value.Cost : 0,
     SpaceAvailable: this.CreatePostModel.value.SpaceAvailable,
     Details: this.CreatePostModel.value.Details,        
-    PostType: this.CreatePostModel.value.PostType
+    PostType: this.CreatePostModel.value.PostType,
+    CurrencySymbols: this.CreatePostModel.value.Currency
     }
     var userID = localStorage.getItem('userID');
     return this.http.post(this.BaseURI+'/posts/createpost/'+userID,body);
@@ -85,7 +87,8 @@ export class HomeService {
     Cost: this.EditPostModel.value.Cost,
     SpaceAvailable: this.EditPostModel.value.SpaceAvailable,
     Details: this.EditPostModel.value.Details,        
-    PostType: this.EditPostModel.value.PostType
+    PostType: this.EditPostModel.value.PostType,
+    CurrencySymbols: this.EditPostModel.value.Currency
     }
     var postID = body.postID;
     return this.http.put(this.BaseURI+'/posts/update/'+postID,body);
@@ -97,15 +100,11 @@ export class HomeService {
     return this.http.post(this.BaseURI+'/posts/createpost/'+userID,body);
   }
 
-  searchPosts(){
-    console.log(this.SearchPostsModel.value.FromCity);
-    console.log(this.SearchPostsModel.value.ToCity);
-    console.log(this.SearchPostsModel.value.PostType);
-    //SearchPosts
+  searchPosts(FromCity:string,ToCity:string,PostType:string){
     var body = {
-      FromCity: this.SearchPostsModel.value.FromCity,
-      ToCity: this.SearchPostsModel.value.ToCity,
-      PostType: this.SearchPostsModel.value.PostType
+      FromCity: FromCity,
+      ToCity: ToCity,
+      PostType: PostType
     };
     var result = this.http.post(this.BaseURI+'/posts/SearchPosts', body);    
     return result;
@@ -128,6 +127,8 @@ export class HomeService {
    console.log(body);
 
   }
-
+  getListOfCurrencies(){
+    return this.http.get(this.BaseURI+'/posts/getcurrencies');
+  }
 
 }

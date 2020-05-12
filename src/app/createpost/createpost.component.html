@@ -9,14 +9,13 @@
           <div class="theme-login">
             <div class="theme-login-header">
               <h1 class="theme-login-title">Create New Post</h1>
-              <p class="theme-login-subtitle">Create New Post</p>
             </div>
             <div class="theme-login-box">
               <div class="theme-login-box-inner">
                 
                <form [formGroup]="_homeService.CreatePostModel" autocomplete="off" (submit)="onSubmit()">
                       <div class="form-group theme-login-form-group">
-                         <select class="form-control" formControlName="PostType">
+                         <select class="form-control" (ngModelChange)="updateForm()" formControlName="PostType">
                           <option disabled value="null">Select Post Type</option>
                           <option>Traveller</option>
                           <option>Requester</option>
@@ -25,35 +24,49 @@
                       <div class="form-group theme-login-form-group">
                         <div class="theme-search-area-section-inner">
                             <i class="theme-search-area-section-icon lin lin-location-pin"></i>
-                            <input class="theme-search-area-section-input typeahead" name="FromCity" type="text" placeholder="From" data-provide="typeahead" #FromCity  (blur)="fromCityChange($event.target.value)"   /> <!--(ngModelChange)="(FromCity.value)"-->
+                            <input class="theme-search-area-section-input typeahead" name="FromCity" type="text" placeholder="From" data-provide="typeahead" #FromCity formControlName="FromCity"  (blur)="fromCityChange($event.target.value)"   /> <!--(ngModelChange)="(FromCity.value)"-->
                           <div *ngIf="submitted && _homeService.CreatePostModel.get('FromCity').errors?.required" class="invalid-feedback">
                               <div *ngIf="_homeService.CreatePostModel.get('FromCity').errors.required"><label class="text-danger">From City is required</label></div>
                           </div>
-                          <div *ngIf="submitted && _homeService.CreatePostModel.get('FromCity').errors?.pattern" class="invalid-feedback">
-                            <div *ngIf="_homeService.CreatePostModel.get('FromCity').errors.pattern"><label class="text-danger">Please select FromCity From List.</label></div>
+                          <div *ngIf="!fromCityBool" class="invalid-feedback">
+                            <div *ngIf="!fromCityBool"><label class="text-danger">Please select FromCity From List.</label></div>
                         </div>
                         </div>
                     </div>
                     <div class="form-group theme-login-form-group">
                         <div class="theme-search-area-section-inner">
                             <i class="theme-search-area-section-icon lin lin-location-pin"></i>
-                            <input class="theme-search-area-section-input typeahead"  name="ToCity"  type="text" placeholder="To" data-provide="typeahead" (blur)="ToCityChange($event.target.value)"/>
+                            <input class="theme-search-area-section-input typeahead"  name="ToCity"  type="text" placeholder="To" data-provide="typeahead" formControlName="ToCity" (blur)="ToCityChange($event.target.value)"/>
                             <div *ngIf="submitted && _homeService.CreatePostModel.get('ToCity').errors?.required" class="invalid-feedback">
-                              <div *ngIf="_homeService.CreatePostModel.get('ToCity').errors.required"><label class="text-danger">From City is required</label></div>
+                              <div *ngIf="_homeService.CreatePostModel.get('ToCity').errors.required"><label class="text-danger">To City is required</label></div>
                           </div>
-                          <div *ngIf="submitted && _homeService.CreatePostModel.get('ToCity').errors?.pattern" class="invalid-feedback">
-                            <div *ngIf="_homeService.CreatePostModel.get('ToCity').errors.pattern"><label class="text-danger">Please select ToCity From List.</label></div>
+                          <div *ngIf="!toCityBool" class="invalid-feedback">
+                            <div *ngIf="!toCityBool"><label class="text-danger">Please select ToCity From List.</label></div>
                         </div>   
                           </div>
                     </div>
-                    <div class="form-group theme-login-form-group">
-                        <input class="form-control" type="text" placeholder="Travel Date" formControlName="TravelDate" autocomplete="false" bsDatepicker />                       
+                    <div class="form-group theme-login-form-group" *ngIf="this.formType=='Traveller'">
+                        <input class="form-control" type="text" placeholder="Travel Date" formControlName="TravelDate" autocomplete="false" bsDatepicker [minDate]="today" />                       
+                      </div>
+                      <div class="form-group theme-login-form-group" *ngIf="this.formType=='Traveller'">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <select class="form-control" formControlName="Currency">
+                              <option [ngValue]="null" disabled>Currency</option>
+                              <option *ngFor="let currency of Currencies" [ngValue]="currency.CurrencySymbolsId">
+                              {{ currency.CountryCode }}
+                              </option>
+                            </select><br>
+                          </div>
+                          <div class="col-md-6">
+                            <input class="form-control" type="number" placeholder="Cost / KG" formControlName="Cost" autocomplete="false" />
+                          </div>
+                        </div>
+                        
+                                              
                       </div>
                       <div class="form-group theme-login-form-group">
-                        <input class="form-control" type="number" placeholder="Cost / KG" formControlName="Cost" autocomplete="false" />                       
-                      </div>
-                      <div class="form-group theme-login-form-group">
-                        <input class="form-control" type="number" placeholder="Space Available" formControlName="SpaceAvailable" autocomplete="false" />                       
+                        <input class="form-control" type="number" placeholder="{{this.formType == 'Traveller' ? 'Space Available (KG)' : 'Space Required (KG)'}}" formControlName="SpaceAvailable" autocomplete="false" />                       
                       </div>
                       <div class="form-group theme-login-form-group">
                         <textarea class="form-control" rows="10" style="height: 100px;" type="text" placeholder="Details..." formControlName="Details"></textarea>                       

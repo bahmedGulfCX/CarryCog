@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { HomeService } from '../shared/home.service';
 import { Router } from '@angular/router';
 import * as data from '../JsonData/FilteredCities.json';
+import { ToastRef, ToastrService } from 'ngx-toastr';
+import { DatePipe } from '@angular/common'
 
 @Component({
   selector: 'app-home',
@@ -9,16 +13,26 @@ import * as data from '../JsonData/FilteredCities.json';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  submitted = false;
+  fromCity:string;
+  toCity:string;
+  fromCountry:string;
+  toCountry:string;
+  postType:string;
+  fromCityBool:boolean = true;
+  toCityBool:boolean = true;
   limitedPosts;
   postResults;
   loadAPI: Promise<any>;
-  constructor(private router:Router, public _homeService:HomeService) {
+  
+  readonly myCutomRegex = '^[^,\n]*((,[^,\n]*){2}$)';
+  constructor(private fb: FormBuilder, private router:Router,private toastr:ToastrService, public _homeService:HomeService, public datepipe: DatePipe) {
     this.loadAPI = new Promise((resolve) => {
       this.loadScript();
       resolve(true);
   });
    }
-
+   
   ngOnInit(): void {
     this.loadposts();
   }
@@ -64,13 +78,61 @@ export class HomeComponent implements OnInit {
 
     }
 }
-
-
+fromCityChange(fromCity: string){
+  this.fromCity = fromCity;
+  if(this.fromCity != ''){
+  if(!this.fromCity.match('^[^,\n]*((,[^,\n]*){2}$)')){
+  this.fromCityBool = false;
+  }
+  else{
+    this.fromCityBool = true;
+  }
+}
+ 
+}
+ToCityChange(toCity: string){
+  console.log(toCity);
+this.toCity = toCity;
+if(this.toCity != ''){
+if(!this.toCity.match('^[^,\n]*((,[^,\n]*){2}$)')){
+  this.toCityBool = false;
+  console.log('In if statement of toCity: '+this.toCityBool);
+  console.log(this.toCity);
+  }
+  else{
+    this.toCityBool = true;
+    console.log('In Else statement of toCity: '+this.toCityBool);
+    console.log(this.toCity);
+  }
+}  
+}
+SearchPostsModel = this.fb.group({
+  FromCity: ['', { updateOn: "blur" }],
+  ToCity: ['', { updateOn: "blur" }],
+  PostType: ['Search For', Validators.required]
+});
   loadposts(): void{
-    this._homeService.getAllPosts().subscribe((data)=>{
-      this.limitedPosts = data;  
-      this.postResults = this.limitedPosts;    
-    });    
+    this._homeService.getAllPosts().subscribe(
+      (res: any) => {
+         if (res.succeeded == 'True') {
+           this.postResults = res.data;          
+        } else {
+          console.log(res.errors);
+         // this.postResults = res.data;
+         // this.toastr.error(res.errors, 'No Record Found!');
+        }
+      },
+      err => {
+        // if(err.message.includes('Http failure')){
+        //   this.toastr.error("Server not available",'Error');
+        // }
+        // else{
+          console.log(err.message);
+        // this.toastr.error(err.message, 'Error');
+        // }
+      }
+    );
+
   }
   
   LoadAllPosts(){
@@ -80,13 +142,35 @@ export class HomeComponent implements OnInit {
   }
  
   onClickSearch() {
-    console.log(this._homeService.SearchPostsModel.value.FromCity);
-    console.log(this._homeService.SearchPostsModel.value.ToCity);
-    console.log(this._homeService.SearchPostsModel.value.PostType);
-   // this._homeService.searchPosts().subscribe((data)=>{
-    //  this.postResults = data;
-    //});
-    
+    this.submitted = true;
+    this.SearchPostsModel.value.FromCity = this.fromCity;
+    this.SearchPostsModel.value.ToCity = this.toCity;
+    this.postType = this.SearchPostsModel.value.PostType;
+    console.log(this.SearchPostsModel);
+    if(this.toCity.match('^[^,\n]*((,[^,\n]*){2}$)') && this.fromCity.match('^[^,\n]*((,[^,\n]*){2}$)') && this.postType != ''){
+     this._homeService.searchPosts(this.fromCity,this.toCity,this.postType).subscribe(
+      (res: any) => {
+         if (res.succeeded == 'True') {
+           this.postResults = res.data;          
+        } else {
+          console.log(res.errors);
+          this.postResults = res.data;
+          this.toastr.error(res.errors, 'No Record Found!');
+        }
+      },
+      err => {
+        // if(err.message.includes('Http failure')){
+        //   this.toastr.error("Server not available",'Error');
+        // }
+        // else{
+          console.log(err.message);
+        // this.toastr.error(err.message, 'Error');
+        // }
+      }
+    );
+  }else{
+  this.loadposts();
+  }
  }
 
   //Send post type to request service for automated message on request

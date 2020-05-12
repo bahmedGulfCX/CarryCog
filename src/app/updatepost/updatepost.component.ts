@@ -15,16 +15,29 @@ export class UpdatepostComponent implements OnInit {
   submitted = false;
   fromCity:string;
   toCity:string;
-  
+  fromCityBool:boolean = true;
+  toCityBool:boolean = true;
+  today: Date;
+  maxDate: Date;
+  minDate: Date;
+  Currencies;
   loadAPI: Promise<any>;
   constructor(private _scriptLoader:ScriptService, public _homeService:HomeService,private toastr:ToastrService, private router:Router) { 
     this.loadAPI = new Promise((resolve) => {
       this.loadScript();
       resolve(true);
   });
+  this.today = new Date();
+    this.minDate = new Date(this.today.getFullYear(), this.today.getMonth(), 2);
   }
   
   ngOnInit(): void {
+    if(localStorage.getItem('token') !=null){
+      this.getListOfCurrencies();
+    }else{
+      this.toastr.error('Please login / register first.', 'No Session Found!');
+          this.router.navigateByUrl("/login");
+    }
   }
 
   public loadScript() {        
@@ -65,15 +78,63 @@ export class UpdatepostComponent implements OnInit {
         }
     }
 }
-
-fromCityChange(fromCity: string){
-    this.fromCity = fromCity;
+getListOfCurrencies(){
+  this._homeService.getListOfCurrencies().subscribe(
+    (res: any) => {
+       if (res.succeeded) {
+         this.Currencies = res.data;
+      } else {
+        console.log(res.errors);
+        this.toastr.error(res.errors, 'Error');
+      }
+    },
+    err => {       
+      console.log(err.error);
+      this.toastr.error(err.error.errors, 'Error');
+    }
+  );
 }
 
+
+formType:string = "Traveller";
+  updateForm(){
+    this.formType = this._homeService.EditPostModel.get('PostType').value;
+    switch(this.formType) {  
+      case "Traveller": { 
+        console.log('Form changed to Traveller')
+         break;
+      }
+      case "Requester": { 
+        console.log('Form changed to Requester')
+         break;
+      }      
+   }
+  }
+
+  fromCityChange(fromCity: string){
+    this.fromCity = fromCity;
+    if(this.fromCity != ''){
+      if(!this.fromCity.match('^[^,\n]*((,[^,\n]*){2}$)')){
+      this.fromCityBool = false;
+      }
+      else{
+        this.fromCityBool = true;
+      }
+    }
+      }
 ToCityChange(toCity: string){
   this.toCity = toCity;
+  
+if(this.toCity != ''){
+  if(!this.toCity.match('^[^,\n]*((,[^,\n]*){2}$)')){
+    this.toCityBool = false;
+    }  
+    else{
+      this.toCityBool = true;
+    }
+  }
+    
 }
-
   onSubmit() {
     this.submitted = true;
    

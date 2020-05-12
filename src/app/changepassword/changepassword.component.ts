@@ -17,7 +17,8 @@ export class ChangepasswordComponent implements OnInit {
     if (localStorage.getItem('token') != null) {
       this.service.changePasswordModel.reset();
     }else{
-        this.router.navigateByUrl("/Home");
+      this.toastr.error('Please login / register first.', 'No Session Found!');
+          this.router.navigateByUrl("/login");
     }
   }
   onSubmit() {

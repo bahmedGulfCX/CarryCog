@@ -25,6 +25,9 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { MypostsComponent } from './myposts/myposts.component';
 import { UpdatepostComponent } from './updatepost/updatepost.component';
+import { DatePipe } from '@angular/common';
+import { ActivateuserComponent } from './activateuser/activateuser.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -32,6 +35,7 @@ import { UpdatepostComponent } from './updatepost/updatepost.component';
     UserComponent,
     RegistrationComponent,
     LoginComponent,
+    ActivateuserComponent,
     FooterComponent,
     HomeComponent,
     HeaderComponent,
@@ -40,7 +44,8 @@ import { UpdatepostComponent } from './updatepost/updatepost.component';
     ResetPasswordComponent,
     CreatepostComponent,
     MypostsComponent,
-    UpdatepostComponent
+    UpdatepostComponent,
+    ActivateuserComponent
   ],
   imports: [
     BrowserModule,
@@ -54,6 +59,7 @@ import { UpdatepostComponent } from './updatepost/updatepost.component';
        timeOut: 10000
      }),
     FormsModule,
+    NgbModule,
     BsDatepickerModule.forRoot()
   ],
   providers: [UserService, {
@@ -61,6 +67,7 @@ import { UpdatepostComponent } from './updatepost/updatepost.component';
     useClass: AuthInterceptor,
     multi: true
   },
+  DatePipe,
 RefreshHeaderService,
 ScriptService],
   bootstrap: [AppComponent]
